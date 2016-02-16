@@ -9,15 +9,33 @@
 import UIKit
 
 class ViewController: UIViewController {
+	
+	@IBOutlet weak var imageView: UIImageView!
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		// Do any additional setup after loading the view, typically from a nib.
+		setupImageView()
+	}
+	
+	func setupImageView() {
+		imageView.layer.cornerRadius = 10
+		imageView.clipsToBounds = true
+		imageView.contentMode = .ScaleAspectFill
+	}
+	
+	func downloadImgage() {
+		if let url = NSURL(string: "http://wwwstaff.ari.uni-heidelberg.de/gaia/gallery/GR/gr0283-01.artistic-Gaia-Galaxy-large.jpg") {
+			if let data = NSData(contentsOfURL: url) {
+				imageView.image = UIImage(data: data)
+			}
+		}
 	}
 	
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		start()
+		downloadImgage()
 	}
 	
 	func start() {

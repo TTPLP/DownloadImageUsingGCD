@@ -42,6 +42,10 @@ class ViewController2: UIViewController {
 		}
 	}
 	
+	@IBAction func buttonClicked() {
+		downloadImageAndShowAtTheSameTime()
+	}
+	
 	@IBAction func downloadImage() {
 		let q = dispatch_get_global_queue(Int(QOS_CLASS_USER_INTERACTIVE.rawValue), 0)
 		let main_queue = dispatch_get_main_queue()
@@ -85,12 +89,69 @@ class ViewController2: UIViewController {
 			}
 		}
 	}
+	
+	func downloadImageAndShowAtTheSameTime() {
+		let q = dispatch_get_global_queue(Int(QOS_CLASS_USER_INTERACTIVE.rawValue), 0)
+		let main_queue = dispatch_get_main_queue()
+		
+		let group = dispatch_group_create()
+		var imageCache: [UIImage?] = [UIImage(), UIImage(), UIImage(), UIImage()]
+		
+		dispatch_group_async(group, q) { () -> Void in
+			if let url = NSURL(string: self.imageURLs[0]) {
+				if let data = NSData(contentsOfURL: url) {
+					dispatch_async(main_queue, { () -> Void in
+						imageCache[0] = UIImage(data: data)
+					})
+				}
+			}
+		}
+		
+		dispatch_group_async(group, q) { () -> Void in
+			if let url = NSURL(string: self.imageURLs[1]) {
+				if let data = NSData(contentsOfURL: url) {
+					dispatch_async(main_queue, { () -> Void in
+						imageCache[1] = UIImage(data: data)
+					})
+				}
+			}
+		}
+		
+		dispatch_group_async(group, q) { () -> Void in
+			if let url = NSURL(string: self.imageURLs[2]) {
+				if let data = NSData(contentsOfURL: url) {
+					dispatch_async(main_queue, { () -> Void in
+						imageCache[2] = UIImage(data: data)
+					})
+				}
+			}
+		}
+		
+		dispatch_group_async(group, q) { () -> Void in
+			if let url = NSURL(string: self.imageURLs[3]) {
+				if let data = NSData(contentsOfURL: url) {
+					dispatch_async(main_queue, { () -> Void in
+						imageCache[3] = UIImage(data: data)
+					})
+				}
+			}
+		}
+		
+		dispatch_group_notify(group, q) { () -> Void in
+			dispatch_async(main_queue, { () -> Void in
+				self.imageView1.image = imageCache[0]
+				self.imageView2.image = imageCache[1]
+				self.imageView3.image = imageCache[2]
+				self.imageView4.image = imageCache[3]
+			})
+		}
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+	
 
     /*
     // MARK: - Navigation
